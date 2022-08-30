@@ -1,28 +1,40 @@
 const { Schema, model } = require('mongoose')
+const dateFormat = require('../utils/dateFormat')
+const dateFormat = require('../utils/dateFormat')
 
-const PizzaSchema = new Schema({
-    pizzaName: {
+const PizzaSchema = new Schema(
+    {
+      pizzaName: {
         type: String
-    },
-    createdBy: {
+      },
+      createdBy: {
         type: String
-    },
-    createdAt: {
+      },
+      createdAt: {
         type: Date,
-        default: Date.now
-    },
-    size: {
+        default: Date.now,
+        get: (createdAtVal) => dateFormat(createdAtVal)
+      },
+      size: {
         type: String,
         default: 'Large'
-    },
-    toppings: [],
-    comments: [
+      },
+      toppings: [],
+      comments: [
         {
-            type: Schema.Types.ObjectId,
-            ref: 'Comment'
+          type: Schema.Types.ObjectId,
+          ref: 'Comment'
         }
-    ]
-})
+      ]
+    },
+    {
+      toJSON: {
+        virtuals: true,
+        getters: true
+      },
+      id: false
+    }
+)
 
 // get total count of comments and replies on retrieval
 PizzaSchema.virtual('commentCount').get(function() {
